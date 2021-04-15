@@ -6,8 +6,8 @@ const request = indexedDB.open('budget_tracker', 1);
 request.onupgradeneeded = function (event) {
     // save a reference to the database 
     const db = event.target.result;
-    // create an object store (table) called `pending`, set it to have an auto incrementing primary key of sorts 
-    db.createObjectStore('pending', { autoIncrement: true });
+    // create an object store (table) called `newBudgetEntry`, set it to have an auto incrementing primary key of sorts 
+    db.createObjectStore('newBudgetEntry', { autoIncrement: true });
 };
 
 // upon a successful 
@@ -15,11 +15,10 @@ request.onsuccess = function (event) {
     // when db is successfully created with its object store (from onupgradedneeded event above) or simply established a connection, save reference to db in global variable
     db = event.target.result;
 
-    // check if app is online, if yes run uploadPizza() function to send all local db data to api
+    // check if app is online, if yes run uploadAction() function to send all local db data to api
     if (navigator.onLine) {
-        // we haven't created this yet, but we will soon, so let's comment it out for now
-        // uploadPizza();
-        checkDataBase();
+        
+        uploadAction();
     }
 };
 
@@ -31,25 +30,25 @@ request.onerror = function (event) {
 // This function will be executed if we attempt to submit a new pizza and there's no internet connection
 function saveRecord(record) {
     // open a new transaction with the database with read and write permissions 
-    const transaction = db.transaction('pending');
+    const transaction = db.transaction(['newBudgetEntry'], 'readwrite');
 
-    // access the object store for `pending`
-    const store = transaction.objectStore('pending');
+    // access the object store for `newBudgetEntry`
+    const storeEntry = transaction.objectStore('newBudgetEntry');
 
     // add record to your store with add method
-    store.add(record);
+    storeEntry.add(record);
 }
 
-// Create a function that will handle collecting all of the data from the pending object store in IndexedDB and POST it to the server
-function checkDatabase() {
+// Create a function that will handle collecting all of the data from the newBudgetEntry object store in IndexedDB and POST it to the server
+function uploadAction() {
     // Open a new transaction to the database to read the data.
-    const transaction = db.transaction(['pending'], 'readwrite');
+    const transaction = db.transaction(['newBudgetEntry'], 'readwrite');
 
     // access object store
-    const store = transaction.objectStore('pending');
+    const storeEntry = transaction.objectStore('newBudgetEntry');
 
     // Get all records from store and set to variable
-    const getAll = store.getAll();
+    const getAll = storeEntry.getAll();
 
 
     // upon a successful .getAll() execution, run this function
@@ -70,11 +69,11 @@ function checkDatabase() {
                         throw new Error(serverResponse);
                     }
                     // open one more transaction
-                    const transaction = db.transaction(['pending'], 'readwrite');
-                    // access the pending object store
-                    const store = transaction.objectStore('pending');
+                    const transaction = db.transaction(['newBudgetEntry'], 'readwrite');
+                    // access the newBudgetEntry object store
+                    const storeEntry = transaction.objectStore('newBudgetEntry');
                     // clear all items in your store
-                    store.clear();
+                    storeEntry.clear();
 
                     alert('All saved transaction has been submitted!');
                 })
@@ -88,4 +87,4 @@ function checkDatabase() {
 // listen for app coming back online
 // window.addEventListener('online', uploadPizza);
 // Listen for if the app comes back online
-window.addEventListener('online', checkDatabase);
+window.addEventListener('online', uploadAction);
