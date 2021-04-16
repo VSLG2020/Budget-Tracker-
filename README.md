@@ -9,11 +9,11 @@ THEN the deposits or expenses added while they were offline are added to their t
 
 
 ### Main
-![main page](./public/assets/budgetss2.jpg)
+![main page](./public/assets/budgetSS2.jpg)
 
 
 ### Offline 
-![Offline ](./public/assets/budgetss.jpg)
+![Offline ](./public/assets/budgetSS.jpg)
 
 ### PWA
 ![PWA](./public/assets/serviceworkerss.jpg)
